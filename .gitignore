@@ -25,3 +25,6 @@ hs_err_pid*
 .project
 bin/
 target/
+PCIB17GIH-MQTT-tcp1270011883/.lck
+*.prefs
+.factorypath
