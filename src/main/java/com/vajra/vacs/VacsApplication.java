@@ -9,5 +9,6 @@ public class VacsApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(VacsApplication.class, args);
 	}
+	
 
 }
