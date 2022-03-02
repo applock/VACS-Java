@@ -75,6 +75,17 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>com.dahua.netsdk</groupId>
+			<artifactId>dahua-netsdk-jni</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.dahua.netsdk</groupId>
+			<artifactId>dahua-netsdk-jni-demo</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 
 
@@ -83,6 +94,50 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>install-local-dahua-netsdk-jni</id>
+						<phase>clean</phase>
+						<configuration>
+							<file>${basedir}/libs/INetSDK.jar</file>
+							<repositoryLayout>default</repositoryLayout>
+							<groupId>com.dahua.netsdk</groupId>
+							<artifactId>dahua-netsdk-jni</artifactId>
+							<version>1.0.0</version>
+							<packaging>jar</packaging>
+							<generatePom>true</generatePom>
+						</configuration>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>install-local-dahua-netsdk-jni</id>
+						<phase>clean</phase>
+						<configuration>
+							<file>${basedir}/libs/netsdk-1.0-demo.jar</file>
+							<repositoryLayout>default</repositoryLayout>
+							<groupId>com.dahua.netsdk</groupId>
+							<artifactId>dahua-netsdk-jni-demo</artifactId>
+							<version>1.0.0</version>
+							<packaging>jar</packaging>
+							<generatePom>true</generatePom>
+						</configuration>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
