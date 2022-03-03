@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vajra.vacs.pojo.Vehicle;
+import com.vajra.vacs.pojo.VehicleMinimized;
 import com.vajra.vacs.service.VehicleService;
 
 @RestController
@@ -48,8 +49,8 @@ public class VehicleController {
 	}
 
 	@GetMapping("/vehicleByNo/{vehNo}")
-	ResponseEntity<Vehicle> getVehicle(@PathVariable("vehNo") String vehNo) {
-		logger.debug("getVehicle :: Received request to get vehicle with vehNo: {}", vehNo);
+	ResponseEntity<Vehicle> getVehicleByName(@PathVariable("vehNo") String vehNo) {
+		logger.debug("getVehicleByName :: Received request to get vehicle with vehNo: {}", vehNo);
 		Optional<Vehicle> vehicle = vehicleService.getVehicleByVehicleNo(vehNo);
 		if (vehicle.isPresent()) {
 			Vehicle v = vehicle.get();
@@ -58,6 +59,24 @@ public class VehicleController {
 			return new ResponseEntity<Vehicle>(HttpStatus.NOT_FOUND);
 		} else {
 			return new ResponseEntity<Vehicle>(HttpStatus.NOT_FOUND);
+		}
+	}
+
+	@GetMapping("/vehicleMinByNo/{vehNo}")
+	ResponseEntity<VehicleMinimized> getVehicleByNameMin(@PathVariable("vehNo") String vehNo) {
+		logger.debug("getVehicleByNameMin :: Received request to get vehicle with vehNo: {}", vehNo);
+		Optional<Vehicle> vehicle = vehicleService.getVehicleByVehicleNo(vehNo);
+		if (vehicle.isPresent()) {
+			Vehicle v = vehicle.get();
+			if (v.isActive())
+				return new ResponseEntity<VehicleMinimized>(VehicleMinimized.builder()
+						.withProfileTypeId(v.getProfileTypeId()).withRecidentName(v.getRecidentName())
+						.withRecidentProfileStatusId(v.getRecidentProfileStatusId()).withUnitName(v.getUnitName())
+						.withVehicleNo(v.getVehicleNo()).withVehicleSoftLock(v.isActive() ? "Active" : "Locked")
+						.withVehicleStatusId(v.getVehicleStatusId()).build(), HttpStatus.OK);
+			return new ResponseEntity<VehicleMinimized>(HttpStatus.NOT_FOUND);
+		} else {
+			return new ResponseEntity<VehicleMinimized>(HttpStatus.NOT_FOUND);
 		}
 	}
 
