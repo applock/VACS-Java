@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vajra.vacs.pojo.Vehicle;
+import com.vajra.vacs.pojo.VehicleLogs;
 import com.vajra.vacs.pojo.VehicleMinimized;
 import com.vajra.vacs.service.VehicleService;
 
@@ -103,5 +104,13 @@ public class VehicleController {
 
 		vehicleService.pullFromVajraApp();
 		return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+	}
+
+	@PostMapping("/transaction")
+	ResponseEntity<VehicleLogs> vehicleTrafficLog(@RequestBody VehicleLogs vlog) {
+		logger.debug("vehicleTrafficLog :: Received transaction {}", vlog);
+
+		VehicleLogs vl = vehicleService.logVechile(vlog);
+		return new ResponseEntity<VehicleLogs>(vl, HttpStatus.OK);
 	}
 }

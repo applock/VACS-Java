@@ -23,6 +23,8 @@ import org.springframework.web.client.RestTemplate;
 import com.vajra.vacs.pojo.VajraVehicle;
 import com.vajra.vacs.pojo.VajraVehicleResponse;
 import com.vajra.vacs.pojo.Vehicle;
+import com.vajra.vacs.pojo.VehicleLogs;
+import com.vajra.vacs.repository.VehicleLogsRepository;
 import com.vajra.vacs.repository.VehicleRepository;
 
 @Service
@@ -32,6 +34,9 @@ public class VehicleService {
 
 	@Autowired
 	private VehicleRepository vehicleRepo;
+
+	@Autowired
+	private VehicleLogsRepository logRepo;
 
 	@Autowired
 	RestTemplate restTemplate;
@@ -141,5 +146,9 @@ public class VehicleService {
 			logger.error("pullFromVajraApp : {}", e.getMessage());
 		}
 
+	}
+
+	public VehicleLogs logVechile(VehicleLogs vlog) {
+		return logRepo.save(vlog);
 	}
 }
