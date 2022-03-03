@@ -27,16 +27,30 @@ public class VehicleController {
 	private VehicleService vehicleService;
 
 	@PostMapping("/vehicle")
-	ResponseEntity<Vehicle> addVehicle(@RequestBody Vehicle veh) throws MqttException, InterruptedException {
+	ResponseEntity<Vehicle> addVehicle(@RequestBody Vehicle veh) {
 		logger.debug("addVehicle :: Received request to add vehicle: {}", veh);
 		Vehicle v = vehicleService.saveVehicle(veh);
 		return new ResponseEntity<Vehicle>(v, HttpStatus.OK);
 	}
 
 	@GetMapping("/vehicle/{id}")
-	ResponseEntity<Vehicle> getVehicle(@PathVariable("id") Integer id) throws MqttException, InterruptedException {
+	ResponseEntity<Vehicle> getVehicle(@PathVariable("id") Integer id) {
 		logger.debug("getVehicle :: Received request to get vehicle with id: {}", id);
-		Optional<Vehicle> vehicle = vehicleService.getVehicle(id);
+		Optional<Vehicle> vehicle = vehicleService.getVehicleById(id);
+		if (vehicle.isPresent()) {
+			Vehicle v = vehicle.get();
+			if (v.isActive())
+				return new ResponseEntity<Vehicle>(v, HttpStatus.OK);
+			return new ResponseEntity<Vehicle>(HttpStatus.NOT_FOUND);
+		} else {
+			return new ResponseEntity<Vehicle>(HttpStatus.NOT_FOUND);
+		}
+	}
+
+	@GetMapping("/vehicleByNo/{vehNo}")
+	ResponseEntity<Vehicle> getVehicle(@PathVariable("vehNo") String vehNo) {
+		logger.debug("getVehicle :: Received request to get vehicle with vehNo: {}", vehNo);
+		Optional<Vehicle> vehicle = vehicleService.getVehicleByVehicleNo(vehNo);
 		if (vehicle.isPresent()) {
 			Vehicle v = vehicle.get();
 			if (v.isActive())

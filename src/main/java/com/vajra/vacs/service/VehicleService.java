@@ -6,6 +6,7 @@ import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.vajra.vacs.pojo.Vehicle;
 import com.vajra.vacs.repository.VehicleRepository;
@@ -16,8 +17,12 @@ public class VehicleService {
 	@Autowired
 	private VehicleRepository vehicleRepo;
 
-	public Optional<Vehicle> getVehicle(Integer id) {
+	public Optional<Vehicle> getVehicleById(Integer id) {
 		return vehicleRepo.findById(id);
+	}
+	
+	public Optional<Vehicle> getVehicleByVehicleNo(String vehicleNo) {
+		return vehicleRepo.findVehicleByVehicleNo(vehicleNo);
 	}
 
 	public Vehicle saveVehicle(Vehicle v) {
@@ -29,10 +34,19 @@ public class VehicleService {
 		if (vo.isPresent()) {
 			Vehicle veh = vo.get();
 			veh.setActive(v.isActive());
-			veh.setTemporaryLock(v.isTemporaryLock());
-			veh.setOwnerName(v.getOwnerName());
-			veh.setOwnerPhone(v.getOwnerPhone());
-			veh.setOwnerEmail(v.getOwnerEmail());
+			if (StringUtils.hasText(v.getRecidentName()))
+				veh.setRecidentName(v.getRecidentName());
+			if (StringUtils.hasText(v.getVehicleColor()))
+				veh.setVehicleColor(v.getVehicleColor());
+			if (StringUtils.hasText(v.getVehicleModal()))
+				veh.setVehicleModal(v.getVehicleModal());
+			if (StringUtils.hasText(v.getVehicleType()))
+				veh.setVehicleType(v.getVehicleType());
+			if (StringUtils.hasText(v.getUnitName()))
+				veh.setUnitName(v.getUnitName());
+			if (StringUtils.hasText(v.getVehicleNPRImage()))
+				veh.setVehicleNPRImage(v.getVehicleNPRImage());
+
 			return vehicleRepo.save(veh);
 		} else {
 			throw new EntityNotFoundException("Vehicle with id: " + id + " not found.");

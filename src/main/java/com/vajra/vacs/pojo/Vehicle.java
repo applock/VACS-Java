@@ -6,10 +6,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
+
+import io.swagger.annotations.ApiModelProperty;
 
 @Entity
 @Table(name = "vehicle")
+//@IdClass(VehicleIdClass.class)
 public class Vehicle implements Serializable {
 
 	/**
@@ -19,13 +23,26 @@ public class Vehicle implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@ApiModelProperty(readOnly = true)
 	private Integer id;
-	private String numberplate;
-	private String ownername;
-	private String ownerphone;
-	private String owneremail;
+
+	private Integer recidentId;
+
+	// @Id
+	private String vehicleNo;
+	private String vehicleColor;
+	private String vehicleModal;
+	private String vehicleType;
+	private String recidentName;
+	private Integer profileTypeId;
+	private Integer unitId;
+	private Integer vehicleId;
+	private Integer vehicleStatusId;
+	private Integer recidentProfileStatusId;
+	private String unitName;
+	private String vehicleNPRImage;
 	private boolean active;
-	private boolean temporarylock;
+	private boolean vehicleSoftLock;
 
 	public Integer getId() {
 		return id;
@@ -35,36 +52,108 @@ public class Vehicle implements Serializable {
 		this.id = id;
 	}
 
-	public String getNumberPlate() {
-		return numberplate;
+	public Integer getRecidentId() {
+		return recidentId;
 	}
 
-	public void setNumberPlate(String numberPlate) {
-		this.numberplate = numberPlate;
+	public void setRecidentId(Integer recidentId) {
+		this.recidentId = recidentId;
 	}
 
-	public String getOwnerName() {
-		return ownername;
+	public String getVehicleNo() {
+		return vehicleNo;
 	}
 
-	public void setOwnerName(String ownerName) {
-		this.ownername = ownerName;
+	public void setVehicleNo(String vehicleNo) {
+		this.vehicleNo = vehicleNo;
 	}
 
-	public String getOwnerPhone() {
-		return ownerphone;
+	public String getVehicleColor() {
+		return vehicleColor;
 	}
 
-	public void setOwnerPhone(String ownerPhone) {
-		this.ownerphone = ownerPhone;
+	public void setVehicleColor(String vehicleColor) {
+		this.vehicleColor = vehicleColor;
 	}
 
-	public String getOwnerEmail() {
-		return owneremail;
+	public String getVehicleModal() {
+		return vehicleModal;
 	}
 
-	public void setOwnerEmail(String ownerEmail) {
-		this.owneremail = ownerEmail;
+	public void setVehicleModal(String vehicleModal) {
+		this.vehicleModal = vehicleModal;
+	}
+
+	public String getVehicleType() {
+		return vehicleType;
+	}
+
+	public void setVehicleType(String vehicleType) {
+		this.vehicleType = vehicleType;
+	}
+
+	public String getRecidentName() {
+		return recidentName;
+	}
+
+	public void setRecidentName(String recidentName) {
+		this.recidentName = recidentName;
+	}
+
+	public Integer getProfileTypeId() {
+		return profileTypeId;
+	}
+
+	public void setProfileTypeId(Integer profileTypeId) {
+		this.profileTypeId = profileTypeId;
+	}
+
+	public Integer getUnitId() {
+		return unitId;
+	}
+
+	public void setUnitId(Integer unitId) {
+		this.unitId = unitId;
+	}
+
+	public Integer getVehicleId() {
+		return vehicleId;
+	}
+
+	public void setVehicleId(Integer vehicleId) {
+		this.vehicleId = vehicleId;
+	}
+
+	public Integer getVehicleStatusId() {
+		return vehicleStatusId;
+	}
+
+	public void setVehicleStatusId(Integer vehicleStatusId) {
+		this.vehicleStatusId = vehicleStatusId;
+	}
+
+	public Integer getRecidentProfileStatusId() {
+		return recidentProfileStatusId;
+	}
+
+	public void setRecidentProfileStatusId(Integer recidentProfileStatusId) {
+		this.recidentProfileStatusId = recidentProfileStatusId;
+	}
+
+	public String getUnitName() {
+		return unitName;
+	}
+
+	public void setUnitName(String unitName) {
+		this.unitName = unitName;
+	}
+
+	public String getVehicleNPRImage() {
+		return vehicleNPRImage;
+	}
+
+	public void setVehicleNPRImage(String vehicleNPRImage) {
+		this.vehicleNPRImage = vehicleNPRImage;
 	}
 
 	public boolean isActive() {
@@ -75,19 +164,22 @@ public class Vehicle implements Serializable {
 		this.active = active;
 	}
 
-	public boolean isTemporaryLock() {
-		return temporarylock;
+	public boolean isVehicleSoftLock() {
+		return vehicleSoftLock;
 	}
 
-	public void setTemporaryLock(boolean temporaryLock) {
-		this.temporarylock = temporaryLock;
+	public void setVehicleSoftLock(boolean vehicleSoftLock) {
+		this.vehicleSoftLock = vehicleSoftLock;
 	}
 
 	@Override
 	public String toString() {
-		return "Vehicle [id=" + id + ", numberPlate=" + numberplate + ", ownerName=" + ownername + ", ownerPhone="
-				+ ownerphone + ", ownerEmail=" + owneremail + ", active=" + active + ", temporaryLock=" + temporarylock
-				+ "]";
+		return "Vehicle [recidentId=" + recidentId + ", vehicleNo=" + vehicleNo + ", vehicleColor=" + vehicleColor
+				+ ", vehicleModal=" + vehicleModal + ", vehicleType=" + vehicleType + ", recidentName=" + recidentName
+				+ ", profileTypeId=" + profileTypeId + ", unitId=" + unitId + ", vehicleId=" + vehicleId
+				+ ", vehicleStatusId=" + vehicleStatusId + ", recidentProfileStatusId=" + recidentProfileStatusId
+				+ ", unitName=" + unitName + ", vehicleNPRImage=" + vehicleNPRImage + ", active=" + active
+				+ ", vehicleSoftLock=" + vehicleSoftLock + "]";
 	}
 
 }
