@@ -39,6 +39,9 @@ public class VehicleService {
 	@Value("${vajra.appUrl}")
 	String vajraAppVehicleUrl;
 
+	@Value("${vajra.key}")
+	String vajraAppkey;
+
 	public Optional<Vehicle> getVehicleById(Integer id) {
 		return vehicleRepo.findById(id);
 	}
@@ -92,7 +95,7 @@ public class VehicleService {
 		try {
 			URI uri = new URI(vajraAppVehicleUrl);
 			HttpHeaders headers = new HttpHeaders();
-			headers.set("ApiKeyKiosk", "k89m5bae-5c40-985a-bb30-h74602e56f731");
+			headers.set("ApiKeyKiosk", vajraAppkey);
 
 			HttpEntity<VajraVehicleResponse> requestEntity = new HttpEntity<>(null, headers);
 
@@ -104,28 +107,34 @@ public class VehicleService {
 			if ("200".equals(vvr.getCode())) {
 				ArrayList<VajraVehicle> vvl = vvr.getList();
 				Iterator<VajraVehicle> vi = vvl.iterator();
-				
+
 				while (vi.hasNext()) {
 					VajraVehicle vv = vi.next();
-					Vehicle v = new Vehicle();
-					v.setActive(vv.getVehicleStatusName().equals("Active"));
-					v.setProfileTypeId(vv.getProfileTypeId());
-					v.setRecidentId(vv.getRecidentId());
-					v.setRecidentName(vv.getRecidentName());
-					v.setRecidentProfileStatusId(vv.getRecidentProfileStatusId());
-					v.setUnitId(vv.getUnitId());
-					v.setUnitName(vv.getUnitName());
-					v.setVehicleColor(vv.getVehicleColor());
-					v.setVehicleId(vv.getVehicleId());
-					v.setVehicleModal(vv.getVehicleModal());
-					v.setVehicleNo(vv.getVehicleNo());
-					v.setVehicleNPRImage(vv.getVehicleNPRImage());
-					v.setVehicleSoftLock(vv.isVehicleSoftLock());
-					v.setVehicleStatusId(vv.getVehicleStatusId());
-					v.setVehicleType(vv.getVehicleType());
 
-					vehicleRepo.save(v);
-					logger.debug("pullFromVajraApp : Vehicle added {}", v);
+					Optional<Vehicle> existing = vehicleRepo.findVehicleByVehicleNo(vv.getVehicleNo());
+					if (existing.isEmpty()) {
+						Vehicle v = new Vehicle();
+						v.setActive(vv.getVehicleStatusName().equals("Active"));
+						v.setProfileTypeId(vv.getProfileTypeId());
+						v.setRecidentId(vv.getRecidentId());
+						v.setRecidentName(vv.getRecidentName());
+						v.setRecidentProfileStatusId(vv.getRecidentProfileStatusId());
+						v.setUnitId(vv.getUnitId());
+						v.setUnitName(vv.getUnitName());
+						v.setVehicleColor(vv.getVehicleColor());
+						v.setVehicleId(vv.getVehicleId());
+						v.setVehicleModal(vv.getVehicleModal());
+						v.setVehicleNo(vv.getVehicleNo());
+						v.setVehicleNPRImage(vv.getVehicleNPRImage());
+						v.setVehicleSoftLock(vv.isVehicleSoftLock());
+						v.setVehicleStatusId(vv.getVehicleStatusId());
+						v.setVehicleType(vv.getVehicleType());
+
+						vehicleRepo.save(v);
+						logger.debug("pullFromVajraApp : Vehicle added {}", v);
+					} else {
+						logger.debug("pullFromVajraApp : Vehicle with number {} already exists", vv.getVehicleNo());
+					}
 				}
 			}
 		} catch (URISyntaxException e) {
