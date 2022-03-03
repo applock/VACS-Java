@@ -44,9 +44,6 @@ public class VacsController {
 	MqttConnectOptions options;
 
 	@Autowired
-	private VehicleRepository vehicleRepo;
-
-	@Autowired
 	private MqttUtils utils;
 
 	@Value("${mqtt.publishTopic}")

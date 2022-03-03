@@ -77,4 +77,12 @@ public class VehicleController {
 			return new ResponseEntity<HttpStatus>(HttpStatus.OK);
 		return new ResponseEntity<HttpStatus>(HttpStatus.NOT_FOUND);
 	}
+
+	@GetMapping("/pullFrom/vajraApp")
+	ResponseEntity<HttpStatus> pullFromVajraApp() {
+		logger.debug("pullFromVajraApp :: Received request ..");
+
+		vehicleService.pullFromVajraApp();
+		return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+	}
 }
