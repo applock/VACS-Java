@@ -20,7 +20,7 @@ public class VajraAppSyncScheduler {
 	@Autowired
 	private VehicleService vehicleService;
 
-	@Scheduled(cron = "*/10 * * * *")
+	@Scheduled(cron = "0 */10 * * * *")
 	public void cronJobSyncWithVajraAppSch() {
 		logger.debug("cronJobSyncWithVajraAppSch : Starting..");
 		vehicleService.checkUnSyncedAndPushToVajra();

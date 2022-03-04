@@ -9,7 +9,7 @@ import com.vajra.vacs.pojo.VehicleLogs;
 
 public interface VehicleLogsRepository extends JpaRepository<VehicleLogs, Integer> {
 
-	@Query("SELECT vl FROM VehicleLogs vl where vl.is_sync=false")
+	@Query("SELECT vl FROM VehicleLogs vl where vl.IsSync=false")
 	public List<VehicleLogs> findUnsyncedLogs();
 
 }
