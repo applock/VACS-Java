@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
+import com.vajra.vacs.pojo.VajraTransaction;
 import com.vajra.vacs.pojo.VajraVehicle;
 import com.vajra.vacs.pojo.VajraVehicleResponse;
 import com.vajra.vacs.pojo.Vehicle;
@@ -43,6 +44,12 @@ public class VehicleService {
 
 	@Value("${vajra.appUrl}")
 	String vajraAppVehicleUrl;
+
+	@Value("${vajra.txnUrl}")
+	String vajraAppTxnUrl;
+
+	@Value("${vajra.snapFolder}")
+	String snapFolder;
 
 	@Value("${vajra.key}")
 	String vajraAppkey;
@@ -141,6 +148,8 @@ public class VehicleService {
 						logger.debug("pullFromVajraApp : Vehicle with number {} already exists", vv.getVehicleNo());
 					}
 				}
+			} else {
+				logger.error("pullFromVajraApp : Got a non-200 response code.");
 			}
 		} catch (URISyntaxException e) {
 			logger.error("pullFromVajraApp : {}", e.getMessage());
@@ -150,5 +159,25 @@ public class VehicleService {
 
 	public VehicleLogs logVechile(VehicleLogs vlog) {
 		return logRepo.save(vlog);
+	}
+
+	public void pushVechileTransactionToVajra(VajraTransaction vajraTransaction) {
+		logger.debug("pushVechileTransactionToVajra : Starting..");
+		try {
+			URI uri = new URI(vajraAppTxnUrl);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("ApiKeyKiosk", vajraAppkey);
+
+			HttpEntity<VajraTransaction> requestEntity = new HttpEntity<>(vajraTransaction, headers);
+
+			ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
+			logger.debug("pushVechileTransactionToVajra : Result received - {}", result);
+
+			System.out.println(result);
+
+		} catch (Exception e) {
+			logger.error("pushVechileTransactionToVajra : {}", e.getMessage());
+		}
+
 	}
 }

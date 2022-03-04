@@ -1,6 +1,12 @@
 package com.vajra.vacs.api;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Base64;
 import java.util.Optional;
+
+import javax.imageio.ImageIO;
 
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.slf4j.Logger;
@@ -16,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vajra.vacs.pojo.VajraTransaction;
 import com.vajra.vacs.pojo.Vehicle;
 import com.vajra.vacs.pojo.VehicleLogs;
 import com.vajra.vacs.pojo.VehicleMinimized;
@@ -107,10 +114,23 @@ public class VehicleController {
 	}
 
 	@PostMapping("/transaction")
-	ResponseEntity<VehicleLogs> vehicleTrafficLog(@RequestBody VehicleLogs vlog) {
+	ResponseEntity<VehicleLogs> vehicleTrafficLog(@RequestBody VehicleLogs vlog) throws IOException {
 		logger.debug("vehicleTrafficLog :: Received transaction {}", vlog);
 
 		VehicleLogs vl = vehicleService.logVechile(vlog);
+		logger.debug("vehicleTrafficLog :: Vehicle transaction logged. Pushing to Vajra App..");
+
+		// File sourceimage = new File("c:\\mypic.jpg");
+		// BufferedImage image = ImageIO.read(sourceimage);
+		// String encodedFile = Base64.getEncoder().encodeToString(image.get);
+
+		vehicleService.pushVechileTransactionToVajra(VajraTransaction.builder().withIPAdderess(vl.getIPAdderess())
+				.withIsSync(vl.getIsSync()).withPort(vl.getPort()).withResidentId(vl.getResidentId())
+				.withSnapStringBase64(null).withTransactionDateTime(vl.getTransactionDateTime())
+				.withTransactionType(vl.getTransactionType()).withVehicleId(vl.getVehicleId())
+				.withVehicleNo(vl.getVehicleNo()).build());
+		logger.debug("vehicleTrafficLog :: Vehicle transaction pushed to Vajra App");
+
 		return new ResponseEntity<VehicleLogs>(vl, HttpStatus.OK);
 	}
 }
