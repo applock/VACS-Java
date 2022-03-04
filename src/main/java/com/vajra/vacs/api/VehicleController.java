@@ -8,12 +8,14 @@ import java.util.Optional;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -114,21 +116,28 @@ public class VehicleController {
 	}
 
 	@PostMapping("/transaction")
-	ResponseEntity<VehicleLogs> vehicleTrafficLog(@RequestBody VehicleLogs vlog) throws IOException {
+	ResponseEntity<VehicleLogs> vehicleTrafficLog(@RequestBody VehicleLogs vlog) {
 		logger.debug("vehicleTrafficLog :: Received transaction {}", vlog);
 
+		vlog.setIsSync(false);
 		VehicleLogs vl = vehicleService.logVechile(vlog);
 		logger.debug("vehicleTrafficLog :: Vehicle transaction logged. Pushing to Vajra App..");
 
-		// File sourceimage = new File("c:\\mypic.jpg");
-		// BufferedImage image = ImageIO.read(sourceimage);
-		// String encodedFile = Base64.getEncoder().encodeToString(image.get);
+		String snapBase64 = null;
+		if (StringUtils.hasText(vlog.getSnapURL())) {
+			try {
+				byte[] fileContent = FileUtils.readFileToByteArray(new File(vlog.getSnapURL()));
+				snapBase64 = Base64.getEncoder().encodeToString(fileContent);
+			} catch (IOException e) {
+				logger.debug("vehicleTrafficLog :: Snap URL to Base64 failed due to {}", e.getMessage());
+			}
+		}
 
 		vehicleService.pushVechileTransactionToVajra(VajraTransaction.builder().withIPAdderess(vl.getIPAdderess())
 				.withIsSync(vl.getIsSync()).withPort(vl.getPort()).withResidentId(vl.getResidentId())
-				.withSnapStringBase64(null).withTransactionDateTime(vl.getTransactionDateTime())
+				.withSnapStringBase64(snapBase64).withTransactionDateTime(vl.getTransactionDateTime())
 				.withTransactionType(vl.getTransactionType()).withVehicleId(vl.getVehicleId())
-				.withVehicleNo(vl.getVehicleNo()).build());
+				.withVehicleNo(vl.getVehicleNo()).build(), vl);
 		logger.debug("vehicleTrafficLog :: Vehicle transaction pushed to Vajra App");
 
 		return new ResponseEntity<VehicleLogs>(vl, HttpStatus.OK);

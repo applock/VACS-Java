@@ -161,7 +161,7 @@ public class VehicleService {
 		return logRepo.save(vlog);
 	}
 
-	public void pushVechileTransactionToVajra(VajraTransaction vajraTransaction) {
+	public void pushVechileTransactionToVajra(VajraTransaction vajraTransaction, VehicleLogs vl) {
 		logger.debug("pushVechileTransactionToVajra : Starting..");
 		try {
 			URI uri = new URI(vajraAppTxnUrl);
@@ -173,7 +173,11 @@ public class VehicleService {
 			ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
 			logger.debug("pushVechileTransactionToVajra : Result received - {}", result);
 
-			System.out.println(result);
+			if (result.getBody() != null) {
+				vl.setIsSync(true);
+				logger.debug("pushVechileTransactionToVajra : Setting is sync to true");
+				logRepo.save(vl);
+			}
 
 		} catch (Exception e) {
 			logger.error("pushVechileTransactionToVajra : {}", e.getMessage());
