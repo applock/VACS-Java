@@ -142,7 +142,7 @@ public class VehicleController {
 				.withSnapStringBase64(snapBase64).withTransactionDateTime(vl.getTransactionDateTime())
 				.withTransactionType(vl.getTransactionType()).withVehicleId(vl.getVehicleId())
 				.withVehicleNo(vl.getVehicleNo()).build(), vl);
-		logger.debug("vehicleTrafficLog :: Vehicle transaction pushed to Vajra App");
+		logger.debug("vehicleTrafficLog :: async vehicle transaction push to Vajra App initiated..");
 
 		return new ResponseEntity<Response>(Response.builder().withCode("200").withMessage("success").build(),
 				HttpStatus.OK);

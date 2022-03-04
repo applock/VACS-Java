@@ -16,6 +16,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
@@ -161,6 +162,7 @@ public class VehicleService {
 		return logRepo.save(vlog);
 	}
 
+	@Async
 	public void pushVechileTransactionToVajra(VajraTransaction vajraTransaction, VehicleLogs vl) {
 		logger.debug("pushVechileTransactionToVajra : Starting..");
 		try {
@@ -173,7 +175,7 @@ public class VehicleService {
 			ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
 			logger.debug("pushVechileTransactionToVajra : Result received - {}", result);
 
-			if (result.getBody() != null) {
+			if (null != result && result.getBody() != null && result.getBody().contains("success")) {
 				vl.setIsSync(true);
 				logger.debug("pushVechileTransactionToVajra : Setting is sync to true");
 				logRepo.save(vl);
