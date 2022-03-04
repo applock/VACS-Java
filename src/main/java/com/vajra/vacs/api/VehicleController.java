@@ -1,12 +1,9 @@
 package com.vajra.vacs.api;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Optional;
-
-import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.paho.client.mqttv3.MqttException;

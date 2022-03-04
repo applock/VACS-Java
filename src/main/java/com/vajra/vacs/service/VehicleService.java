@@ -1,13 +1,18 @@
 package com.vajra.vacs.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +21,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -163,8 +169,8 @@ public class VehicleService {
 	}
 
 	@Async
-	public void pushVechileTransactionToVajra(VajraTransaction vajraTransaction, VehicleLogs vl) {
-		logger.debug("pushVechileTransactionToVajra : Starting..");
+	public void pushVechileTransactionToVajra(VajraTransaction vajraTransaction, @NonNull VehicleLogs vl) {
+		logger.debug("pushVechileTransactionToVajra : Starting for vehicle no - {}", vl.getVehicleNo());
 		try {
 			URI uri = new URI(vajraAppTxnUrl);
 			HttpHeaders headers = new HttpHeaders();
@@ -184,6 +190,33 @@ public class VehicleService {
 		} catch (Exception e) {
 			logger.error("pushVechileTransactionToVajra : {}", e.getMessage());
 		}
+	}
 
+	public void checkUnSyncedAndPushToVajra() {
+		logger.debug("checkUnSyncedAndPushToVajra : Starting..");
+		List<VehicleLogs> vll = logRepo.findUnsyncedLogs();
+		logger.debug("checkUnSyncedAndPushToVajra : Count - {}", vll.size());
+
+		Iterator<VehicleLogs> vlli = vll.iterator();
+		while (vlli.hasNext()) {
+			VehicleLogs vl = vlli.next();
+
+			try {
+				logger.debug("checkUnSyncedAndPushToVajra :: snap file url - {}", vl.getSnapURL());
+				byte[] fileContent = FileUtils.readFileToByteArray(new File(vl.getSnapURL()));
+				logger.debug("checkUnSyncedAndPushToVajra : Attempting Sync to Vajra App for vehicle no - {}",
+						vl.getVehicleNo());
+
+				pushVechileTransactionToVajra(VajraTransaction.builder().withIPAdderess(vl.getIPAdderess())
+						.withIsSync(vl.getIsSync()).withPort(vl.getPort()).withResidentId(vl.getResidentId())
+						.withSnapStringBase64(Base64.getEncoder().encodeToString(fileContent))
+						.withTransactionDateTime(vl.getTransactionDateTime())
+						.withTransactionType(vl.getTransactionType()).withVehicleId(vl.getVehicleId())
+						.withVehicleNo(vl.getVehicleNo()).build(), vl);
+			} catch (IOException e) {
+				logger.error("checkUnSyncedAndPushToVajra : IOException - {}", e.getMessage());
+			}
+
+		}
 	}
 }
