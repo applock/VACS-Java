@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vajra.vacs.pojo.Response;
 import com.vajra.vacs.pojo.VajraTransaction;
 import com.vajra.vacs.pojo.Vehicle;
 import com.vajra.vacs.pojo.VehicleLogs;
@@ -116,7 +117,7 @@ public class VehicleController {
 	}
 
 	@PostMapping("/transaction")
-	ResponseEntity<VehicleLogs> vehicleTrafficLog(@RequestBody VehicleLogs vlog) {
+	ResponseEntity<Response> vehicleTrafficLog(@RequestBody VehicleLogs vlog) {
 		logger.debug("vehicleTrafficLog :: Received transaction {}", vlog);
 
 		vlog.setIsSync(false);
@@ -130,6 +131,8 @@ public class VehicleController {
 				snapBase64 = Base64.getEncoder().encodeToString(fileContent);
 			} catch (IOException e) {
 				logger.debug("vehicleTrafficLog :: Snap URL to Base64 failed due to {}", e.getMessage());
+				return new ResponseEntity<Response>(Response.builder().withCode("400").withMessage("error").build(),
+						HttpStatus.BAD_REQUEST);
 			}
 		}
 
@@ -140,6 +143,7 @@ public class VehicleController {
 				.withVehicleNo(vl.getVehicleNo()).build(), vl);
 		logger.debug("vehicleTrafficLog :: Vehicle transaction pushed to Vajra App");
 
-		return new ResponseEntity<VehicleLogs>(vl, HttpStatus.OK);
+		return new ResponseEntity<Response>(Response.builder().withCode("200").withMessage("success").build(),
+				HttpStatus.OK);
 	}
 }
