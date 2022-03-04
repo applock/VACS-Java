@@ -127,6 +127,7 @@ public class VehicleController {
 		String snapBase64 = null;
 		if (StringUtils.hasText(vlog.getSnapURL())) {
 			try {
+				logger.debug("vehicleTrafficLog :: snap file url - {}", vlog.getSnapURL());
 				byte[] fileContent = FileUtils.readFileToByteArray(new File(vlog.getSnapURL()));
 				snapBase64 = Base64.getEncoder().encodeToString(fileContent);
 			} catch (IOException e) {
