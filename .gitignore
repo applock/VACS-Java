@@ -26,6 +26,8 @@ hs_err_pid*
 bin/
 target/
 .classpath
-.factorypath
 .settings/
 *.gz
+*.lck
+*.prefs
+.factorypath
