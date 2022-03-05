@@ -28,3 +28,4 @@ target/
 .classpath
 .factorypath
 .settings/
+*.gz

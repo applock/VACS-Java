@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.vajra.vacs.pojo.VacsInput;
 import com.vajra.vacs.repository.VehicleRepository;
-import com.vajra.vacs.service.MessagingService;
+import com.vajra.vacs.service.MessageProcessingService;
 import com.vajra.vacs.utils.MqttUtils;
 
 @RequestMapping("/v1")
@@ -35,7 +35,7 @@ public class VacsController {
 	private Logger logger = LoggerFactory.getLogger(VacsController.class);
 
 	@Autowired
-	private MessagingService messagingService;
+	private MessageProcessingService messagingService;
 
 	@Autowired
 	private ConfigurableApplicationContext context;
@@ -58,7 +58,7 @@ public class VacsController {
 		logger.debug("pushMessage :: Received request to publish: {}", input);
 
 		// messagingService.subscribe(topicToPublish);
-		messagingService.publish(topicToPublish, input.getMsg(), 0, true);
+		//messagingService.publish(topicToPublish, input.getMsg(), 0, true);
 		logger.debug("pushMessage :: message published to {}", topicToPublish);
 
 		context.close();
@@ -75,7 +75,7 @@ public class VacsController {
 		if (!StringUtils.isEmpty(topic))
 			subscribedTopic = topic;
 
-		messagingService.subscribe(subscribedTopic);
+		//messagingService.subscribe(subscribedTopic);
 		context.close();
 
 		return new ResponseEntity<HttpStatus>(HttpStatus.ACCEPTED);
