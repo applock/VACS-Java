@@ -25,13 +25,11 @@ public class Vehicle implements Serializable {
 	@ApiModelProperty(readOnly = true)
 	private Integer id;
 
-	private Integer recidentId;
-
-	// @Id
 	private String vehicleNo;
 	private String vehicleColor;
 	private String vehicleModal;
 	private String vehicleType;
+	private Integer recidentId;
 	private String recidentName;
 	private Integer profileTypeId;
 	private Integer unitId;
