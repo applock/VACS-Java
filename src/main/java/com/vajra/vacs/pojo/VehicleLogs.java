@@ -8,7 +8,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 
 @Entity
 @Table(name = "vehicle_logs")
@@ -28,7 +29,7 @@ public class VehicleLogs implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@ApiModelProperty(readOnly = true)
+	@Schema(accessMode = AccessMode.READ_ONLY)
 	private Integer log_id;
 	private Integer VehicleId;
 	private Integer ResidentId;

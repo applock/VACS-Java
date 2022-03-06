@@ -20,6 +20,7 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.MessagingException;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import com.vajra.vacs.service.MessageProcessingService;
 
@@ -31,6 +32,7 @@ import java.util.List;
  */
 @Configuration
 @IntegrationComponentScan
+@EnableAsync
 public class MqttSubscribeConfig {
 
 	private Logger logger = LoggerFactory.getLogger(MqttSubscribeConfig.class);
