@@ -18,7 +18,7 @@ public class MessageProcessingService {
 
 	@Autowired
 	private VehicleRepository vehicleRepo;
-
+	
 	@Async
 	@Transactional
 	public void processMqttMessage(String payload) {
