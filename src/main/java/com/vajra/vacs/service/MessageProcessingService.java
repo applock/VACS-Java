@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vajra.vacs.pojo.MqttInputMessage;
 import com.vajra.vacs.pojo.MsgFromVajraAppWithMetadata;
@@ -26,6 +27,8 @@ public class MessageProcessingService {
 		logger.debug("processMqttMessage : payload - {}", payload);
 
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
 		MqttInputMessage inputMsg = null;
 		try {
 			MsgFromVajraAppWithMetadata tempMsg = mapper.readValue(payload, MsgFromVajraAppWithMetadata.class);

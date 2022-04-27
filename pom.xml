@@ -67,11 +67,6 @@
 
 		<dependency>
 			<groupId>com.dahua.netsdk</groupId>
-			<artifactId>dahua-netsdk-jni</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.dahua.netsdk</groupId>
 			<artifactId>dahua-netsdk-jni-demo</artifactId>
 			<version>1.0.0</version>
 		</dependency>
