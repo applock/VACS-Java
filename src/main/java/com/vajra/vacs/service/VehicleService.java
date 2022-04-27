@@ -52,6 +52,9 @@ public class VehicleService {
 	@Value("${vajra.appUrl}")
 	String vajraAppVehicleUrl;
 
+	@Value("${vajra.newVehicleUrl}")
+	String vajraAppNewVehicleUrl;
+
 	@Value("${vajra.txnUrl}")
 	String vajraAppTxnUrl;
 
@@ -109,10 +112,11 @@ public class VehicleService {
 		}
 	}
 
-	public void pullFromVajraApp() {
-		logger.debug("pullFromVajraApp : Starting..");
+	public void pullFromVajraApp(String vechileId) {
+		logger.debug("pullFromVajraApp : Starting with vechileId - {}", vechileId);
 		try {
-			URI uri = new URI(vajraAppVehicleUrl);
+			URI uri = StringUtils.hasText(vechileId) ? new URI(vajraAppNewVehicleUrl + vechileId.trim())
+					: new URI(vajraAppVehicleUrl);
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("ApiKeyKiosk", vajraAppkey);
 

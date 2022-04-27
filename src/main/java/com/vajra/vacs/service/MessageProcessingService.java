@@ -21,6 +21,9 @@ public class MessageProcessingService {
 	@Autowired
 	private VehicleRepository vehicleRepo;
 
+	@Autowired
+	private VehicleService vehicleService;
+
 	@Async
 	@Transactional
 	public void processMqttMessage(String payload) {
@@ -95,6 +98,14 @@ public class MessageProcessingService {
 				logger.debug("processMqttMessage : Event Type # Change_SoftLock | vehicle id - {}, soft lock - {}",
 						inputMsg.getVehicleId(), inputMsg.getVehicleSoftLock());
 				vehicleRepo.updateSoftLock(inputMsg.getVehicleSoftLock(), inputMsg.getVehicleId());
+				break;
+			case "New_VehicleRegistration":
+				// mosquitto_pub -h localhost -m
+				// {\"eventType\":\"New_VehicleRegistration\", \"vehicleId\":1}
+				// -t messageToVacs
+				logger.debug("processMqttMessage : Event Type # New_VehicleRegistration | vehicle id - {}",
+						inputMsg.getVehicleId());
+				vehicleService.pullFromVajraApp(String.valueOf(inputMsg.getVehicleId()));
 				break;
 			default:
 				logger.error("processMqttMessage : mqtt json event type is invalid - {}", inputMsg.getEventType());

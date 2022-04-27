@@ -109,7 +109,7 @@ public class VehicleController {
 	ResponseEntity<HttpStatus> pullFromVajraApp() {
 		logger.debug("pullFromVajraApp :: Received request ..");
 
-		vehicleService.pullFromVajraApp();
+		vehicleService.pullFromVajraApp(null);
 		return new ResponseEntity<HttpStatus>(HttpStatus.OK);
 	}
 
