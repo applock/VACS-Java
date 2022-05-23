@@ -45,6 +45,9 @@ public class VehicleService {
 
 	@Autowired
 	private VehicleLogsRepository logRepo;
+	
+	@Autowired
+	private AnprService anprService;
 
 	@Autowired
 	RestTemplate restTemplate;
@@ -154,7 +157,9 @@ public class VehicleService {
 						v.setVehicleType(vv.getVehicleType());
 
 						vehicleRepo.save(v);
-						logger.debug("pullFromVajraApp : Vehicle added {}", v);
+						logger.debug("pullFromVajraApp : Vehicle added {}, also adding in ANPR..", v);
+						
+						anprService.addVehicle(vv.getVehicleNo());
 					} else {
 						logger.debug("pullFromVajraApp : Vehicle with number {} already exists", vv.getVehicleNo());
 					}

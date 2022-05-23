@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vajra.vacs.pojo.MqttInputMessage;
 import com.vajra.vacs.pojo.MsgFromVajraAppWithMetadata;
+import com.vajra.vacs.pojo.Vehicle;
 import com.vajra.vacs.repository.VehicleRepository;
 
 @Service
@@ -23,6 +24,9 @@ public class MessageProcessingService {
 
 	@Autowired
 	private VehicleService vehicleService;
+
+	@Autowired
+	private AnprService anprService;
 
 	@Async
 	@Transactional
@@ -89,7 +93,10 @@ public class MessageProcessingService {
 				// {\"eventType\":\"Delete_Vehicle\",\"vehicleId\":27} -t messageToVacs
 				logger.debug("processMqttMessage : Event Type # Delete_Vehicle | vehicle id - {}",
 						inputMsg.getVehicleId());
+				Vehicle vehd = vehicleRepo.getById(inputMsg.getVehicleId());
 				vehicleRepo.deleteVehicleById(inputMsg.getVehicleId());
+				logger.debug("processMqttMessage : delete vehicle DB updated for vehicle - {}", vehd);
+				anprService.deleteVehicle(vehd.getVehicleNo());
 				break;
 			case "Change_SoftLock":
 				// mosquitto_pub -h localhost -m
@@ -98,6 +105,16 @@ public class MessageProcessingService {
 				logger.debug("processMqttMessage : Event Type # Change_SoftLock | vehicle id - {}, soft lock - {}",
 						inputMsg.getVehicleId(), inputMsg.getVehicleSoftLock());
 				vehicleRepo.updateSoftLock(inputMsg.getVehicleSoftLock(), inputMsg.getVehicleId());
+
+				Vehicle vehc = vehicleRepo.getById(inputMsg.getVehicleId());
+				logger.debug("processMqttMessage : soft locked vehicle DB updated for vehicle - {}", vehc);
+
+				if (inputMsg.getVehicleSoftLock()) {
+					anprService.deleteVehicle(vehc.getVehicleNo());
+				} else {
+					anprService.addVehicle(vehc.getVehicleNo());
+				}
+
 				break;
 			case "New_VehicleRegistration":
 				// mosquitto_pub -h localhost -m
@@ -106,6 +123,10 @@ public class MessageProcessingService {
 				logger.debug("processMqttMessage : Event Type # New_VehicleRegistration | vehicle id - {}",
 						inputMsg.getVehicleId());
 				vehicleService.pullFromVajraApp(String.valueOf(inputMsg.getVehicleId()));
+
+				Vehicle veha = vehicleRepo.getById(inputMsg.getVehicleId());
+				logger.debug("processMqttMessage : new vehicle DB updated for vehicle - {}", veha);
+				anprService.addVehicle(veha.getVehicleNo());
 				break;
 			default:
 				logger.error("processMqttMessage : mqtt json event type is invalid - {}", inputMsg.getEventType());
