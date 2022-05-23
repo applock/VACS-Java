@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -28,6 +29,7 @@ public class AnprService {
 	private Logger logger = LoggerFactory.getLogger(AnprService.class);
 
 	@Autowired
+	@Qualifier("restAnprTemplate")
 	RestTemplate restTemplate;
 
 	@Value("${anpr.ip}")
@@ -66,7 +68,8 @@ public class AnprService {
 
 				HttpHeaders headers = new HttpHeaders();
 				String authStr = anprUser + ":" + anprPassword;
-				headers.add("Authorization", "Basic " + Base64.getEncoder().encodeToString(authStr.getBytes()));
+				// headers.add("Authorization", "Basic " +
+				// Base64.getEncoder().encodeToString(authStr.getBytes()));
 
 				HttpEntity<Object> requestEntity = new HttpEntity<>(null, headers);
 
@@ -104,7 +107,8 @@ public class AnprService {
 
 					HttpHeaders headers = new HttpHeaders();
 					String authStr = anprUser + ":" + anprPassword;
-					headers.add("Authorization", "Basic " + Base64.getEncoder().encodeToString(authStr.getBytes()));
+					// headers.add("Authorization", "Basic " +
+					// Base64.getEncoder().encodeToString(authStr.getBytes()));
 
 					HttpEntity<Object> requestEntity = new HttpEntity<>(null, headers);
 
