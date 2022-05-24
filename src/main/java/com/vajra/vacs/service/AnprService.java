@@ -1,18 +1,32 @@
 package com.vajra.vacs.service;
 
-import java.util.Base64;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.impl.auth.DigestScheme;
+import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,18 +80,10 @@ public class AnprService {
 
 				logger.debug("addVehicle :: calling anpr add vehicle url - {}", uriComponents.toUriString());
 
-				HttpHeaders headers = new HttpHeaders();
-				String authStr = anprUser + ":" + anprPassword;
-				// headers.add("Authorization", "Basic " +
-				// Base64.getEncoder().encodeToString(authStr.getBytes()));
+				String regNoRaw = callApnrUsingDigest(uriComponents.toUriString());
+				logger.debug("addVehicle : Result received - {}", regNoRaw);
 
-				HttpEntity<Object> requestEntity = new HttpEntity<>(null, headers);
-
-				ResponseEntity<String> result = restTemplate.exchange(uriComponents.toUriString(), HttpMethod.POST,
-						requestEntity, String.class);
-				logger.debug("addVehicle : Result received - {}", result);
-
-				String regNo = result.getBody().split("=")[1];
+				String regNo = regNoRaw.split("=")[1];
 				logger.debug("addVehicle : vechileNo - {} at ip - {} got regNo - {}", anprs[i], vechileNo, regNo);
 				ar.setRegNo(regNo);
 			} catch (Exception e) {
@@ -105,16 +111,8 @@ public class AnprService {
 
 					logger.debug("deleteVehicle :: calling anpr delete vehicle url - {}", uriComponents.toUriString());
 
-					HttpHeaders headers = new HttpHeaders();
-					String authStr = anprUser + ":" + anprPassword;
-					// headers.add("Authorization", "Basic " +
-					// Base64.getEncoder().encodeToString(authStr.getBytes()));
-
-					HttpEntity<Object> requestEntity = new HttpEntity<>(null, headers);
-
-					ResponseEntity<String> result = restTemplate.exchange(uriComponents.toUriString(), HttpMethod.POST,
-							requestEntity, String.class);
-					logger.debug("deleteVehicle : Result received - {}", result);
+					String delResp = callApnrUsingDigest(uriComponents.toUriString());
+					logger.debug("deleteVehicle : Result received - {}", delResp);
 				} catch (Exception e) {
 					logger.error("deleteVehicle : exception - {}", e);
 				}
@@ -122,5 +120,41 @@ public class AnprService {
 
 		}
 		anprRepo.deleteVehicleByNo(vechileNo);
+	}
+
+	protected String callApnrUsingDigest(String target) throws IOException {
+		logger.debug("callApnrUsingDigest : target - {}", target);
+		URL url = new URL(target);
+		HttpHost targetHost = new HttpHost(url.getHost(), -1, null);
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		HttpClientContext context = HttpClientContext.create();
+
+		CredentialsProvider credsProvider = new BasicCredentialsProvider();
+		credsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(anprUser, anprPassword));
+		AuthCache authCache = new BasicAuthCache();
+		DigestScheme digestScheme = new DigestScheme();
+		digestScheme.overrideParamter("realm", "some-realm");
+		digestScheme.overrideParamter("nonce", "whatever");
+		authCache.put(targetHost, digestScheme);
+
+		context.setCredentialsProvider(credsProvider);
+		context.setAuthCache(authCache);
+
+		HttpPost httpPost = new HttpPost(target);
+
+		CloseableHttpResponse response = httpClient.execute(targetHost, httpPost, context);
+		logger.debug("callApnrUsingDigest : Response - " + response);
+		org.apache.http.HttpEntity entity = response.getEntity();
+
+		try (InputStream fis = entity.getContent();
+				InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
+				BufferedReader br = new BufferedReader(isr)) {
+
+			String resp = br.readLine();
+			// br.lines().forEach(line -> System.out.println(line));
+			return resp;
+		} finally {
+			response.close();
+		}
 	}
 }
