@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,6 +67,11 @@ public class AnprService {
 	public void addVehicle(String vechileNo) {
 		logger.debug("addVehicle : Starting for vechileNo - {}", vechileNo);
 
+		LocalDateTime today = LocalDateTime.now();
+		LocalDateTime sameDayAfter5Year = today.plusYears(1);
+		String now = today.format(DateTimeFormatter.ISO_DATE_TIME);
+		String fiveYears = sameDayAfter5Year.format(DateTimeFormatter.ISO_DATE_TIME);
+
 		for (int i = 0; i < anprs.length; i++) {
 			AnprRecord ar = new AnprRecord();
 			ar.setAnprIp(anprs[i]);
@@ -75,7 +82,7 @@ public class AnprService {
 						.path(ANPR_URL).queryParam("action", "insert").queryParam("name", "TrafficRedList")
 						.queryParam("PlateNumber", vechileNo).queryParam("MasterOfCar", vechileNo)
 						.queryParam("PlateColor", "Black").queryParam("VehicleColor", "Black")
-						.queryParam("BeginTime", "Black").queryParam("CancelTime", "Black")
+						.queryParam("BeginTime", now).queryParam("CancelTime", fiveYears)
 						.queryParam("AuthorityList.OpenGate", "true").build();
 
 				logger.debug("addVehicle :: calling anpr add vehicle url - {}", uriComponents.toUriString());
