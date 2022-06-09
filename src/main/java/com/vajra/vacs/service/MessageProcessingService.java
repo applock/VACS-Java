@@ -1,5 +1,7 @@
 package com.vajra.vacs.service;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,13 +108,20 @@ public class MessageProcessingService {
 						inputMsg.getVehicleId(), inputMsg.getVehicleSoftLock());
 				vehicleRepo.updateSoftLock(inputMsg.getVehicleSoftLock(), inputMsg.getVehicleId());
 
-				Vehicle vehc = vehicleRepo.getById(inputMsg.getVehicleId());
-				logger.debug("processMqttMessage : soft locked vehicle DB updated for vehicle - {}", vehc);
+				Optional<Vehicle> vehco = vehicleRepo.findVehicleByVehicleId(inputMsg.getVehicleId());
+				if (vehco.isPresent()) {
+					Vehicle vehc = vehco.get();
+					logger.debug("processMqttMessage : soft locked vehicle DB updated for vehicle - {}", vehc);
 
-				if (inputMsg.getVehicleSoftLock()) {
-					anprService.deleteVehicle(vehc.getVehicleNo());
+					if (inputMsg.getVehicleSoftLock()) {
+						anprService.deleteVehicle(vehc.getVehicleNo());
+					} else {
+						anprService.addVehicle(vehc.getVehicleNo());
+					}
 				} else {
-					anprService.addVehicle(vehc.getVehicleNo());
+					logger.error(
+							"processMqttMessage : soft locked for vehicle id - {} failed, Vehicle does not exists with that id.",
+							inputMsg.getVehicleId());
 				}
 
 				break;

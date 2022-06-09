@@ -12,6 +12,9 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Integer> {
 
 	@Query("SELECT v FROM Vehicle v where v.vehicleNo=?1 and active=true")
 	public Optional<Vehicle> findVehicleByVehicleNo(String vehicleNo);
+	
+	@Query("SELECT v FROM Vehicle v where v.vehicleId=?1 and active=true")
+	public Optional<Vehicle> findVehicleByVehicleId(Integer vehicleId);
 
 	@Modifying
 	@Query("UPDATE Vehicle SET vehicleSoftLock=?1 where vehicleId=?2")
