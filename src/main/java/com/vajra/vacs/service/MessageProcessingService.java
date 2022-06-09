@@ -132,17 +132,9 @@ public class MessageProcessingService {
 				logger.debug("processMqttMessage : Event Type # New_VehicleRegistration | vehicle id - {}",
 						inputMsg.getVehicleId());
 				vehicleService.pullFromVajraApp(String.valueOf(inputMsg.getVehicleId()));
-
-				Optional<Vehicle> vehao = vehicleRepo.findVehicleByVehicleId(inputMsg.getVehicleId());
-				if (vehao.isPresent()) {
-					Vehicle veha = vehao.get();
-					logger.debug("processMqttMessage : new vehicle DB updated for vehicle - {}", veha);
-					anprService.addVehicle(veha.getVehicleNo());
-				} else {
-					logger.error(
-							"processMqttMessage : new vehicle with vehicle id - {} could not be added, Vehicle does not exists with that id.",
-							inputMsg.getVehicleId());
-				}
+				
+				logger.debug("processMqttMessage : new vehicle addition process completed for vehicle - {}",
+						inputMsg.getVehicleId());
 				break;
 			default:
 				logger.error("processMqttMessage : mqtt json event type is invalid - {}", inputMsg.getEventType());

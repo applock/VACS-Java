@@ -114,7 +114,7 @@ public class AnprService {
 				try {
 					UriComponents uriComponents = UriComponentsBuilder.newInstance().scheme("http").host(ar.getAnprIp())
 							.path(ANPR_URL).queryParam("action", "remove").queryParam("name", "TrafficRedList")
-							.queryParam("regno", ar.getRegNo()).build();
+							.queryParam("recno", ar.getRegNo()).build();
 
 					logger.debug("deleteVehicle :: calling anpr delete vehicle url - {}", uriComponents.toUriString());
 
